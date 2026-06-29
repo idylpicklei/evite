@@ -168,7 +168,6 @@ const formattedDate = formatWeddingDate(config.weddingDate);
     text-align: center;
     z-index: 1;
     opacity: 0;
-    visibility: hidden;
     will-change: transform, opacity;
   }
 
@@ -369,7 +368,6 @@ const formattedDate = formatWeddingDate(config.weddingDate);
 
     .invitation-card {
       opacity: 1 !important;
-      visibility: visible !important;
       transform: translateX(-50%) translateY(0) !important;
       z-index: 10 !important;
     }
@@ -418,6 +416,23 @@ const formattedDate = formatWeddingDate(config.weddingDate);
     scrollTriggers = [];
   }
 
+  function measurePositions(
+    stage: HTMLElement,
+    envelope: HTMLElement,
+    card: HTMLElement,
+  ) {
+    const stageRect = stage.getBoundingClientRect();
+    const envRect = envelope.getBoundingClientRect();
+    const envTop = envRect.top - stageRect.top;
+    const cardH = card.offsetHeight || 340;
+
+    return {
+      startY: envTop + envRect.height * 0.52,
+      emergeY: envTop + envRect.height * 0.05,
+      endY: Math.max(10, envTop - cardH - 10),
+    };
+  }
+
   function initEnvelopeScroll() {
     destroyEnvelopeScroll();
 
@@ -435,96 +450,68 @@ const formattedDate = formatWeddingDate(config.weddingDate);
     content.classList.remove('is-visible');
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      gsap.set(card, { xPercent: -50, y: 0, opacity: 1, visibility: 'visible', zIndex: 10 });
+      gsap.set(card, { xPercent: -50, y: 0, opacity: 1, zIndex: 10 });
       content.classList.add('is-visible');
       return;
     }
 
-    /* Measure where the envelope opening sits inside the stage */
-    const syncPositions = () => {
-      const stageRect = stage.getBoundingClientRect();
-      const envRect = envelope.getBoundingClientRect();
-      const openingY = envRect.top - stageRect.top + envRect.height * 0.12;
-      const insideY = envRect.top - stageRect.top + envRect.height * 0.5;
-      const settledY = Math.max(12, openingY - envRect.height * 0.55);
-      return { openingY, insideY, settledY, stageRect, envRect };
-    };
-
-    let positions = syncPositions();
-
     gsap.set(flap, { rotateX: 0, transformOrigin: '50% 0%', opacity: 1, zIndex: 5 });
     gsap.set(envelope, { opacity: 1, y: 0 });
-    gsap.set(card, {
-      xPercent: -50,
-      y: positions.insideY + 80,
-      opacity: 0,
-      visibility: 'hidden',
-      zIndex: 1,
-    });
-    gsap.set(content, { opacity: 0 });
-    gsap.set(seal, { opacity: 1, scale: 1 });
-    if (hint) gsap.set(hint, { opacity: 1 });
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: 0.55,
-        pin: '#envelope-sticky',
-        pinSpacing: true,
-        invalidateOnRefresh: true,
-        onRefresh: () => {
-          positions = syncPositions();
+    const buildTimeline = () => {
+      const { startY, emergeY, endY } = measurePositions(stage, envelope, card);
+
+      gsap.set(card, { xPercent: -50, y: startY, opacity: 0, zIndex: 1 });
+      gsap.set(content, { opacity: 0 });
+      gsap.set(seal, { opacity: 1, scale: 1 });
+      if (hint) gsap.set(hint, { opacity: 1 });
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 0.55,
+          pin: '#envelope-sticky',
+          pinSpacing: true,
+          invalidateOnRefresh: true,
         },
-        onUpdate: (self) => {
-          positions = syncPositions();
-          const cardRect = card.getBoundingClientRect();
-          const envelopeTop = positions.envRect.top;
+      });
 
-          /* Fully emerged: entire card is above the envelope */
-          const hasLeftEnvelope = cardRect.bottom <= envelopeTop + 6;
+      scrollTriggers.push(tl.scrollTrigger!);
 
-          if (hasLeftEnvelope) {
-            gsap.set(card, { opacity: 1, visibility: 'visible', zIndex: 10 });
-          } else {
-            gsap.set(card, { opacity: 0, visibility: 'hidden', zIndex: 1 });
-          }
+      /* 1. Open flap */
+      tl.to(flap, { rotateX: -165, ease: 'power2.inOut', duration: 0.3 }, 0)
+        .to(seal, { opacity: 0, scale: 0.4, duration: 0.12 }, 0.04)
+        .to(flap, { opacity: 0, zIndex: 0, duration: 0.08 }, 0.26);
 
-          if (self.progress >= 0.78) {
-            content.classList.add('is-visible');
-            gsap.set(content, { opacity: 1 });
-          } else {
-            content.classList.remove('is-visible');
-            gsap.set(content, { opacity: 0 });
-          }
+      /* 2. Letter rises hidden inside envelope */
+      tl.to(card, { y: emergeY, ease: 'power2.inOut', duration: 0.28 }, 0.26);
+
+      /* 3. Letter clears envelope and becomes visible */
+      tl.to(card, { y: endY, opacity: 1, zIndex: 10, ease: 'power2.out', duration: 0.22 }, 0.54);
+
+      /* 4. Envelope softens */
+      tl.to(envelope, { opacity: 0.4, y: 10, duration: 0.18, ease: 'power1.out' }, 0.62);
+
+      /* 5. Invitation text appears */
+      tl.to(
+        content,
+        {
+          opacity: 1,
+          duration: 0.14,
+          ease: 'power1.out',
+          onUpdate: function () {
+            if (this.progress() > 0) content.classList.add('is-visible');
+          },
         },
-      },
-    });
+        0.76,
+      );
 
-    scrollTriggers.push(tl.scrollTrigger!);
+      return tl;
+    };
 
-    /* Phase 1: open flap */
-    tl.to(flap, { rotateX: -165, ease: 'power2.inOut', duration: 0.32 }, 0)
-      .to(seal, { opacity: 0, scale: 0.4, duration: 0.12 }, 0.04)
-      .to(flap, { opacity: 0, zIndex: 0, duration: 0.08 }, 0.28);
-
-    /* Phase 2: letter rises from inside envelope to centered above it */
-    tl.to(
-      card,
-      {
-        y: () => syncPositions().settledY,
-        ease: 'power2.inOut',
-        duration: 0.45,
-      },
-      0.28,
-    );
-
-    /* Phase 3: envelope fades slightly so letter reads clearly */
-    tl.to(envelope, { opacity: 0.35, y: 12, duration: 0.2, ease: 'power1.out' }, 0.65);
-
-    /* Phase 4: invitation text fades in */
-    tl.to(content, { opacity: 1, duration: 0.14, ease: 'power1.out' }, 0.78);
+    buildTimeline();
 
     if (hint) {
       const hintTween = gsap.to(hint, {
@@ -545,7 +532,9 @@ const formattedDate = formatWeddingDate(config.weddingDate);
   }
 
   function boot() {
-    requestAnimationFrame(initEnvelopeScroll);
+    requestAnimationFrame(() => {
+      initEnvelopeScroll();
+    });
   }
 
   if (document.readyState === 'loading') {
@@ -556,6 +545,7 @@ const formattedDate = formatWeddingDate(config.weddingDate);
 
   document.addEventListener('astro:page-load', boot);
   document.addEventListener('astro:before-swap', destroyEnvelopeScroll);
-  window.addEventListener('load', () => ScrollTrigger.refresh());
-  window.addEventListener('resize', () => ScrollTrigger.refresh());
+  window.addEventListener('load', () => {
+    ScrollTrigger.refresh(true);
+  });
 </script>
