@@ -8,7 +8,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "wrangler dev",
+    "preview": "wrangler pages dev dist",
+    "deploy": "npm run build && wrangler pages deploy dist --project-name evite",
     "astro": "astro",
     "generate-types": "wrangler types",
     "db:migrate": "wrangler d1 execute evite-db --local --file=migrations/0001_init.sql",

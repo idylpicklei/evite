@@ -85,6 +85,11 @@ npx wrangler pages secret put SESSION_SECRET
 npx wrangler pages secret put ADMIN_EXPORT_SECRET   # optional, for CSV export API
 ```
 
+Also add a **D1 database binding** in the Pages project settings:
+
+- **Variable name:** `DB`
+- **D1 database:** `evite-db`
+
 ### 4. Deploy via GitHub
 
 Connect the repo to Cloudflare Pages:
@@ -96,9 +101,10 @@ Connect the repo to Cloudflare Pages:
 Or deploy manually:
 
 ```bash
-npm run build
-npx wrangler deploy
+npm run deploy
 ```
+
+Do not use `npx wrangler deploy` for this project unless you intentionally want a standalone Worker deployment. This site is configured for Cloudflare Pages, so manual deploys should use `wrangler pages deploy`.
 
 ## Viewing RSVPs
 
