@@ -11,28 +11,31 @@ const formattedDate = formatWeddingDate(config.weddingDate);
       <div class="envelope" id="envelope">
         <div class="envelope-back"></div>
 
-        <div class="invitation-card" id="invitation-card">
-          <div class="lace-corners" aria-hidden="true">
-            <span class="lace-corner lace-corner--tl"></span>
-            <span class="lace-corner lace-corner--tr"></span>
-            <span class="lace-corner lace-corner--bl"></span>
-            <span class="lace-corner lace-corner--br"></span>
-          </div>
-          <div class="lace-border lace-border--top" aria-hidden="true"></div>
-          <div class="lace-border lace-border--bottom" aria-hidden="true"></div>
+        <!-- Card lives inside the cavity and is clipped until it rises out -->
+        <div class="envelope-cavity" id="envelope-cavity">
+          <div class="invitation-card" id="invitation-card">
+            <div class="lace-corners" aria-hidden="true">
+              <span class="lace-corner lace-corner--tl"></span>
+              <span class="lace-corner lace-corner--tr"></span>
+              <span class="lace-corner lace-corner--bl"></span>
+              <span class="lace-corner lace-corner--br"></span>
+            </div>
+            <div class="lace-border lace-border--top" aria-hidden="true"></div>
+            <div class="lace-border lace-border--bottom" aria-hidden="true"></div>
 
-          <div class="card-content">
-            <p class="card-eyebrow">{config.invitation.headline}</p>
-            <h1 class="card-names">
-              {config.couple.partner1}
-              <span class="ampersand">&</span>
-              {config.couple.partner2}
-            </h1>
-            <p class="card-subhead">{config.invitation.subheadline}</p>
-            <div class="card-divider"></div>
-            <p class="card-date">{formattedDate}</p>
-            <p class="card-venue">{config.venue.name}</p>
-            <p class="card-location">{config.venue.location}</p>
+            <div class="card-content" id="card-content">
+              <p class="card-eyebrow">{config.invitation.headline}</p>
+              <h1 class="card-names">
+                {config.couple.partner1}
+                <span class="ampersand">&</span>
+                {config.couple.partner2}
+              </h1>
+              <p class="card-subhead">{config.invitation.subheadline}</p>
+              <div class="card-divider"></div>
+              <p class="card-date">{formattedDate}</p>
+              <p class="card-venue">{config.venue.name}</p>
+              <p class="card-location">{config.venue.location}</p>
+            </div>
           </div>
         </div>
 
@@ -52,12 +55,8 @@ const formattedDate = formatWeddingDate(config.weddingDate);
 <style>
   .envelope-section {
     position: relative;
-    height: 250vh;
+    height: 280vh;
     background: transparent;
-  }
-
-  .envelope-section::before {
-    content: none;
   }
 
   .envelope-sticky {
@@ -76,7 +75,7 @@ const formattedDate = formatWeddingDate(config.weddingDate);
 
   .envelope-scene {
     perspective: 1400px;
-    perspective-origin: center 35%;
+    perspective-origin: center 30%;
     width: min(90vw, 420px);
     min-height: 280px;
     overflow: visible;
@@ -88,7 +87,6 @@ const formattedDate = formatWeddingDate(config.weddingDate);
     aspect-ratio: 1.5;
     min-height: 240px;
     overflow: visible;
-    transform-style: preserve-3d;
   }
 
   .envelope-back {
@@ -99,6 +97,23 @@ const formattedDate = formatWeddingDate(config.weddingDate);
     border-radius: 4px;
     box-shadow: 0 20px 60px color-mix(in srgb, var(--color-accent) 20%, transparent);
     border: 1px solid color-mix(in srgb, var(--color-accent) 12%, transparent);
+  }
+
+  /* Opening window — card is clipped here until it exits upward */
+  .envelope-cavity {
+    position: absolute;
+    left: 7%;
+    right: 7%;
+    top: 12%;
+    height: 48%;
+    overflow: hidden;
+    z-index: 2;
+    border-radius: 2px 2px 0 0;
+    pointer-events: none;
+  }
+
+  .envelope-cavity.is-open {
+    overflow: visible;
   }
 
   .envelope-front {
@@ -118,7 +133,7 @@ const formattedDate = formatWeddingDate(config.weddingDate);
   .envelope-flap {
     position: absolute;
     inset: 0;
-    z-index: 4;
+    z-index: 5;
     background: var(--color-envelope-flap);
     border-radius: 4px 4px 0 0;
     clip-path: polygon(0 0, 50% 55%, 100% 0);
@@ -147,7 +162,7 @@ const formattedDate = formatWeddingDate(config.weddingDate);
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 12px color-mix(in srgb, var(--color-gold) 40%, transparent);
-    z-index: 5;
+    z-index: 6;
   }
 
   .wax-seal span {
@@ -159,23 +174,35 @@ const formattedDate = formatWeddingDate(config.weddingDate);
 
   .invitation-card {
     position: absolute;
-    top: 18%;
     left: 50%;
-    width: 86%;
-    padding: 2.25rem 1.75rem;
+    top: 0;
+    width: 100%;
+    padding: 2rem 1.5rem;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 252, 253, 0.98) 100%);
     border: 1px solid color-mix(in srgb, var(--color-gold) 35%, transparent);
     border-radius: 2px;
     box-shadow: 0 4px 24px color-mix(in srgb, var(--color-accent) 15%, transparent);
     text-align: center;
+    transform: translateX(-50%) translateY(110%);
+    will-change: transform;
     z-index: 2;
-    opacity: 0.15;
-    transform: translate(-50%, 72px) scale(0.82);
-    will-change: transform, opacity;
-    overflow: visible;
   }
 
-  .lace-corners {
+  .invitation-card.is-emerged {
+    z-index: 10;
+  }
+
+  .card-content {
+    position: relative;
+    z-index: 1;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    opacity: 0;
+  }
+
+  .card-content.is-visible {
+    opacity: 1;
+  }
     position: absolute;
     inset: -10px;
     pointer-events: none;
@@ -231,13 +258,6 @@ const formattedDate = formatWeddingDate(config.weddingDate);
   .lace-border--bottom {
     bottom: 0.65rem;
     transform: scaleY(-1);
-  }
-
-  .card-content {
-    position: relative;
-    z-index: 1;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
   }
 
   .card-eyebrow {
@@ -348,20 +368,24 @@ const formattedDate = formatWeddingDate(config.weddingDate);
     }
   }
 
+  /* No-JS / reduced motion fallback */
   .envelope-section[data-envelope-open='true'] .envelope-flap {
     transform: rotateX(-165deg);
-    opacity: 0.2;
+    opacity: 0;
     z-index: 0;
   }
 
-  .envelope-section[data-envelope-open='true'] .envelope-front {
-    opacity: 0.25;
+  .envelope-section[data-envelope-open='true'] .envelope-cavity {
+    overflow: visible;
   }
 
   .envelope-section[data-envelope-open='true'] .invitation-card {
-    opacity: 1;
+    transform: translateX(-50%) translateY(-220%);
     z-index: 10;
-    transform: translate(-50%, -165px) scale(1);
+  }
+
+  .envelope-section[data-envelope-open='true'] .card-content {
+    opacity: 1;
   }
 
   .envelope-section[data-envelope-open='true'] .wax-seal,
@@ -383,17 +407,20 @@ const formattedDate = formatWeddingDate(config.weddingDate);
 
     .envelope-flap {
       transform: rotateX(-165deg) !important;
-      opacity: 0.2 !important;
+      opacity: 0 !important;
     }
 
-    .envelope-front {
-      opacity: 0.25 !important;
+    .envelope-cavity {
+      overflow: visible !important;
     }
 
     .invitation-card {
-      opacity: 1 !important;
+      transform: translateX(-50%) translateY(-220%) !important;
       z-index: 10 !important;
-      transform: translate(-50%, -165px) scale(1) !important;
+    }
+
+    .card-content {
+      opacity: 1 !important;
     }
 
     .wax-seal,
@@ -440,24 +467,29 @@ const formattedDate = formatWeddingDate(config.weddingDate);
     destroyEnvelopeScroll();
 
     const section = document.querySelector('[data-envelope]');
+    const cavity = document.getElementById('envelope-cavity');
     const flap = document.getElementById('envelope-flap');
-    const front = document.getElementById('envelope-front');
     const card = document.getElementById('invitation-card');
+    const content = document.getElementById('card-content');
     const seal = document.getElementById('wax-seal');
     const hint = document.getElementById('scroll-hint');
 
-    if (!section || !flap || !front || !card || !seal) return;
+    if (!section || !cavity || !flap || !card || !content || !seal) return;
 
     section.removeAttribute('data-envelope-open');
+    cavity.classList.remove('is-open');
+    card.classList.remove('is-emerged');
+    content.classList.remove('is-visible');
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       section.setAttribute('data-envelope-open', 'true');
+      content.classList.add('is-visible');
       return;
     }
 
-    gsap.set(flap, { rotateX: 0, transformOrigin: '50% 0%', opacity: 1, zIndex: 4 });
-    gsap.set(front, { opacity: 1, zIndex: 3 });
-    gsap.set(card, { xPercent: -50, y: 72, scale: 0.82, opacity: 0.15, zIndex: 2 });
+    gsap.set(flap, { rotateX: 0, transformOrigin: '50% 0%', opacity: 1, zIndex: 5 });
+    gsap.set(card, { xPercent: -50, yPercent: 110, zIndex: 2 });
+    gsap.set(content, { opacity: 0 });
     gsap.set(seal, { opacity: 1, scale: 1 });
     if (hint) gsap.set(hint, { opacity: 1 });
 
@@ -466,34 +498,44 @@ const formattedDate = formatWeddingDate(config.weddingDate);
         trigger: section,
         start: 'top top',
         end: 'bottom bottom',
-        scrub: 0.6,
+        scrub: 0.5,
         invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          const p = self.progress;
+
+          /* Unclip cavity once letter clears the opening */
+          if (p >= 0.52) {
+            cavity.classList.add('is-open');
+            card.classList.add('is-emerged');
+          } else {
+            cavity.classList.remove('is-open');
+            card.classList.remove('is-emerged');
+          }
+
+          /* Invitation text only visible after letter has emerged */
+          if (p >= 0.72) {
+            content.classList.add('is-visible');
+          } else {
+            content.classList.remove('is-visible');
+          }
+        },
       },
     });
 
     scrollTriggers.push(tl.scrollTrigger!);
 
-    /* Phase 1: flap opens, seal fades */
-    tl.to(flap, { rotateX: -165, ease: 'power2.inOut', duration: 0.45 }, 0)
-      .to(seal, { opacity: 0, scale: 0.4, duration: 0.2 }, 0.08)
-      .to(flap, { opacity: 0.15, zIndex: 0, duration: 0.15 }, 0.35);
-
-    /* Phase 2: card rises out above envelope */
-    tl.to(
-      card,
-      {
-        opacity: 1,
-        y: -165,
-        scale: 1,
-        zIndex: 10,
-        ease: 'power2.out',
-        duration: 0.55,
-      },
-      0.18,
-    );
-
-    /* Phase 3: front pocket fades so card stays visible */
-    tl.to(front, { opacity: 0.2, duration: 0.35 }, 0.4);
+    /*
+     * Timeline (0–1):
+     * 0.00–0.35  flap opens, seal fades
+     * 0.30–0.70  letter rises through cavity (paper visible, text hidden)
+     * 0.52+      letter clears envelope (handled in onUpdate)
+     * 0.72–0.95  invitation text fades in
+     */
+    tl.to(flap, { rotateX: -165, ease: 'power2.inOut', duration: 0.35 }, 0)
+      .to(seal, { opacity: 0, scale: 0.4, duration: 0.15 }, 0.05)
+      .to(flap, { opacity: 0, zIndex: 0, duration: 0.1 }, 0.3)
+      .to(card, { yPercent: -220, ease: 'power2.inOut', duration: 0.45 }, 0.28)
+      .to(content, { opacity: 1, duration: 0.2, ease: 'power1.out' }, 0.72);
 
     if (hint) {
       const hintTween = gsap.to(hint, {
@@ -501,7 +543,7 @@ const formattedDate = formatWeddingDate(config.weddingDate);
         scrollTrigger: {
           trigger: section,
           start: 'top top',
-          end: '+=120',
+          end: '+=100',
           scrub: true,
         },
       });
