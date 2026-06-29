@@ -8,6 +8,7 @@ import react from '@astrojs/react';
 export default defineConfig({
   output: 'server',
   adapter: cloudflare({
+    sessionKVBindingName: 'EVITE_SESSION',
     platformProxy: {
       enabled: true,
     },
