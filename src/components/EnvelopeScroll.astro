@@ -5,26 +5,35 @@ const config = getWeddingConfig();
 const formattedDate = formatWeddingDate(config.weddingDate);
 ---
 
-<section class="envelope-section" id="invitation">
-  <div class="scroll-spacer" aria-hidden="true"></div>
-
+<section class="envelope-section" id="invitation" data-envelope>
   <div class="envelope-sticky">
     <div class="envelope-scene">
       <div class="envelope" id="envelope">
         <div class="envelope-back"></div>
 
         <div class="invitation-card" id="invitation-card">
-          <p class="card-eyebrow">{config.invitation.headline}</p>
-          <h1 class="card-names">
-            {config.couple.partner1}
-            <span class="ampersand">&</span>
-            {config.couple.partner2}
-          </h1>
-          <p class="card-subhead">{config.invitation.subheadline}</p>
-          <div class="card-divider"></div>
-          <p class="card-date">{formattedDate}</p>
-          <p class="card-venue">{config.venue.name}</p>
-          <p class="card-location">{config.venue.location}</p>
+          <div class="lace-corners" aria-hidden="true">
+            <span class="lace-corner lace-corner--tl"></span>
+            <span class="lace-corner lace-corner--tr"></span>
+            <span class="lace-corner lace-corner--bl"></span>
+            <span class="lace-corner lace-corner--br"></span>
+          </div>
+          <div class="lace-border lace-border--top" aria-hidden="true"></div>
+          <div class="lace-border lace-border--bottom" aria-hidden="true"></div>
+
+          <div class="card-content">
+            <p class="card-eyebrow">{config.invitation.headline}</p>
+            <h1 class="card-names">
+              {config.couple.partner1}
+              <span class="ampersand">&</span>
+              {config.couple.partner2}
+            </h1>
+            <p class="card-subhead">{config.invitation.subheadline}</p>
+            <div class="card-divider"></div>
+            <p class="card-date">{formattedDate}</p>
+            <p class="card-venue">{config.venue.name}</p>
+            <p class="card-location">{config.venue.location}</p>
+          </div>
         </div>
 
         <div class="envelope-front"></div>
@@ -43,7 +52,7 @@ const formattedDate = formatWeddingDate(config.weddingDate);
 <style>
   .envelope-section {
     position: relative;
-    min-height: 300vh;
+    height: 250vh;
     background:
       radial-gradient(ellipse at 20% 20%, color-mix(in srgb, var(--color-primary) 12%, transparent), transparent 50%),
       radial-gradient(ellipse at 80% 80%, color-mix(in srgb, var(--color-accent) 10%, transparent), transparent 50%),
@@ -52,7 +61,7 @@ const formattedDate = formatWeddingDate(config.weddingDate);
 
   .envelope-section::before {
     content: '';
-    position: fixed;
+    position: absolute;
     inset: 0;
     background-image: url('/azalea-pattern.svg');
     background-size: 400px 400px;
@@ -62,14 +71,11 @@ const formattedDate = formatWeddingDate(config.weddingDate);
     z-index: 0;
   }
 
-  .scroll-spacer {
-    height: 300vh;
-  }
-
   .envelope-sticky {
     position: sticky;
     top: 0;
     height: 100vh;
+    min-height: 520px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -80,13 +86,16 @@ const formattedDate = formatWeddingDate(config.weddingDate);
 
   .envelope-scene {
     perspective: 1200px;
+    perspective-origin: center 40%;
     width: min(90vw, 420px);
+    min-height: 280px;
   }
 
   .envelope {
     position: relative;
     width: 100%;
     aspect-ratio: 1.5;
+    min-height: 240px;
     transform-style: preserve-3d;
   }
 
@@ -96,12 +105,17 @@ const formattedDate = formatWeddingDate(config.weddingDate);
     background: var(--color-envelope);
     border-radius: 4px;
     box-shadow: 0 20px 60px color-mix(in srgb, var(--color-accent) 20%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 12%, transparent);
   }
 
   .envelope-front {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, var(--color-envelope) 0%, color-mix(in srgb, var(--color-envelope) 85%, var(--color-envelope-flap)) 100%);
+    background: linear-gradient(
+      180deg,
+      var(--color-envelope) 0%,
+      color-mix(in srgb, var(--color-envelope) 85%, var(--color-envelope-flap)) 100%
+    );
     border-radius: 4px;
     clip-path: polygon(0 55%, 50% 85%, 100% 55%, 100% 100%, 0 100%);
     z-index: 3;
@@ -113,27 +127,33 @@ const formattedDate = formatWeddingDate(config.weddingDate);
     background: var(--color-envelope-flap);
     border-radius: 4px 4px 0 0;
     clip-path: polygon(0 0, 50% 55%, 100% 0);
-    transform-origin: top center;
+    transform-origin: 50% 0%;
     transform: rotateX(0deg);
     z-index: 4;
     backface-visibility: hidden;
+    will-change: transform;
+    border-top: 1px solid color-mix(in srgb, var(--color-accent) 10%, transparent);
   }
 
   .wax-seal {
     position: absolute;
     top: 38%;
     left: 50%;
-    transform: translate(-50%, -50%);
     width: 56px;
     height: 56px;
+    margin-left: -28px;
+    margin-top: -28px;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, color-mix(in srgb, var(--color-gold) 80%, white), var(--color-gold));
+    background: radial-gradient(
+      circle at 35% 35%,
+      color-mix(in srgb, var(--color-gold) 80%, white),
+      var(--color-gold)
+    );
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 12px color-mix(in srgb, var(--color-gold) 40%, transparent);
     z-index: 5;
-    transition: opacity 0.3s ease;
   }
 
   .wax-seal span {
@@ -145,18 +165,88 @@ const formattedDate = formatWeddingDate(config.weddingDate);
 
   .invitation-card {
     position: absolute;
-    top: 8%;
+    top: 6%;
     left: 50%;
-    transform: translateX(-50%) translateY(40px) scale(0.85);
     width: 88%;
-    padding: 2rem 1.5rem;
-    background: white;
-    border: 1px solid color-mix(in srgb, var(--color-gold) 30%, transparent);
+    padding: 2.25rem 1.75rem;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 252, 253, 0.98) 100%);
+    border: 1px solid color-mix(in srgb, var(--color-gold) 35%, transparent);
     border-radius: 2px;
     box-shadow: 0 4px 24px color-mix(in srgb, var(--color-accent) 15%, transparent);
     text-align: center;
-    opacity: 0;
     z-index: 2;
+    opacity: 0;
+    transform: translate(-50%, 48px) scale(0.88);
+    will-change: transform, opacity;
+    overflow: visible;
+  }
+
+  /* Lace frame */
+  .lace-corners {
+    position: absolute;
+    inset: -10px;
+    pointer-events: none;
+  }
+
+  .lace-corner {
+    position: absolute;
+    width: 72px;
+    height: 72px;
+    background: url('/lace-corner.svg') center / contain no-repeat;
+    color: color-mix(in srgb, var(--color-primary) 55%, var(--color-gold));
+    opacity: 0.85;
+  }
+
+  .lace-corner--tl {
+    top: 0;
+    left: 0;
+    transform: rotate(0deg);
+  }
+
+  .lace-corner--tr {
+    top: 0;
+    right: 0;
+    transform: rotate(90deg);
+  }
+
+  .lace-corner--bl {
+    bottom: 0;
+    left: 0;
+    transform: rotate(-90deg);
+  }
+
+  .lace-corner--br {
+    bottom: 0;
+    right: 0;
+    transform: rotate(180deg);
+  }
+
+  .lace-border {
+    position: absolute;
+    left: 2.5rem;
+    right: 2.5rem;
+    height: 20px;
+    background: url('/lace-border.svg') center / auto 100% repeat-x;
+    color: color-mix(in srgb, var(--color-primary) 50%, var(--color-gold));
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .lace-border--top {
+    top: 0.65rem;
+  }
+
+  .lace-border--bottom {
+    bottom: 0.65rem;
+    transform: scaleY(-1);
+  }
+
+  .card-content {
+    position: relative;
+    z-index: 1;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
   }
 
   .card-eyebrow {
@@ -192,10 +282,38 @@ const formattedDate = formatWeddingDate(config.weddingDate);
   }
 
   .card-divider {
-    width: 60px;
+    width: 80px;
     height: 1px;
-    background: var(--color-gold);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--color-gold) 20%,
+      var(--color-gold) 80%,
+      transparent
+    );
     margin: 1.25rem auto;
+    position: relative;
+  }
+
+  .card-divider::before,
+  .card-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border: 1px solid var(--color-gold);
+    border-radius: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    background: white;
+  }
+
+  .card-divider::before {
+    left: -14px;
+  }
+
+  .card-divider::after {
+    right: -14px;
   }
 
   .card-date {
@@ -239,33 +357,61 @@ const formattedDate = formatWeddingDate(config.weddingDate);
     }
   }
 
+  /* Open state without JS */
+  .envelope-section[data-envelope-open='true'] .envelope-flap {
+    transform: rotateX(-160deg);
+  }
+
+  .envelope-section[data-envelope-open='true'] .invitation-card {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  .envelope-section[data-envelope-open='true'] .wax-seal,
+  .envelope-section[data-envelope-open='true'] .scroll-hint {
+    opacity: 0;
+  }
+
   @media (prefers-reduced-motion: reduce) {
+    .envelope-section {
+      height: auto;
+      min-height: 100vh;
+    }
+
+    .envelope-sticky {
+      position: relative;
+      height: auto;
+      min-height: 100vh;
+    }
+
     .envelope-flap {
-      transform: rotateX(180deg) !important;
+      transform: rotateX(-160deg) !important;
     }
 
     .invitation-card {
       opacity: 1 !important;
-      transform: translateX(-50%) translateY(0) scale(1) !important;
+      transform: translate(-50%, 0) scale(1) !important;
     }
 
     .wax-seal,
     .scroll-hint {
       opacity: 0 !important;
     }
-
-    .scroll-spacer {
-      height: 100vh;
-    }
-
-    .envelope-section {
-      min-height: 100vh;
-    }
   }
 
   @media (max-width: 480px) {
     .invitation-card {
-      padding: 1.5rem 1rem;
+      padding: 1.75rem 1.25rem;
+    }
+
+    .lace-corner {
+      width: 56px;
+      height: 56px;
+    }
+
+    .lace-border {
+      left: 1.75rem;
+      right: 1.75rem;
     }
 
     .card-subhead {
@@ -280,12 +426,17 @@ const formattedDate = formatWeddingDate(config.weddingDate);
 
   gsap.registerPlugin(ScrollTrigger);
 
-  function initEnvelopeScroll() {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      return;
-    }
+  let scrollTriggers: ScrollTrigger[] = [];
 
-    const section = document.querySelector('.envelope-section');
+  function destroyEnvelopeScroll() {
+    scrollTriggers.forEach((st) => st.kill());
+    scrollTriggers = [];
+  }
+
+  function initEnvelopeScroll() {
+    destroyEnvelopeScroll();
+
+    const section = document.querySelector('[data-envelope]');
     const flap = document.getElementById('envelope-flap');
     const card = document.getElementById('invitation-card');
     const seal = document.getElementById('wax-seal');
@@ -293,32 +444,63 @@ const formattedDate = formatWeddingDate(config.weddingDate);
 
     if (!section || !flap || !card || !seal) return;
 
+    section.removeAttribute('data-envelope-open');
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      section.setAttribute('data-envelope-open', 'true');
+      return;
+    }
+
+    gsap.set(flap, { rotateX: 0, transformOrigin: '50% 0%' });
+    gsap.set(card, { xPercent: -50, y: 48, scale: 0.88, opacity: 0 });
+    gsap.set(seal, { opacity: 1, scale: 1 });
+    if (hint) gsap.set(hint, { opacity: 1 });
+
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
         start: 'top top',
         end: 'bottom bottom',
-        scrub: 0.8,
+        scrub: 0.6,
+        invalidateOnRefresh: true,
       },
     });
 
-    tl.to(flap, { rotateX: 180, ease: 'power2.inOut', duration: 1 }, 0)
-      .to(seal, { opacity: 0, scale: 0.5, duration: 0.3 }, 0.2)
-      .to(card, { opacity: 1, y: -20, scale: 1, ease: 'power2.out', duration: 1 }, 0.3);
+    scrollTriggers.push(tl.scrollTrigger!);
+
+    tl.to(flap, { rotateX: -160, ease: 'power2.inOut', duration: 1 }, 0)
+      .to(seal, { opacity: 0, scale: 0.5, duration: 0.25 }, 0.15)
+      .to(card, { opacity: 1, y: 0, scale: 1, ease: 'power2.out', duration: 1 }, 0.25);
 
     if (hint) {
-      gsap.to(hint, {
+      const hintTween = gsap.to(hint, {
         opacity: 0,
         scrollTrigger: {
           trigger: section,
           start: 'top top',
-          end: '20% bottom',
+          end: '+=120',
           scrub: true,
         },
       });
+      if (hintTween.scrollTrigger) {
+        scrollTriggers.push(hintTween.scrollTrigger);
+      }
     }
+
+    ScrollTrigger.refresh();
   }
 
-  initEnvelopeScroll();
-  document.addEventListener('astro:page-load', initEnvelopeScroll);
+  function boot() {
+    requestAnimationFrame(initEnvelopeScroll);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+  document.addEventListener('astro:page-load', boot);
+  document.addEventListener('astro:before-swap', destroyEnvelopeScroll);
+  window.addEventListener('load', () => ScrollTrigger.refresh());
 </script>
