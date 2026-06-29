@@ -1,0 +1,324 @@
+---
+import { getWeddingConfig, formatWeddingDate } from '../lib/config';
+
+const config = getWeddingConfig();
+const formattedDate = formatWeddingDate(config.weddingDate);
+---
+
+<section class="envelope-section" id="invitation">
+  <div class="scroll-spacer" aria-hidden="true"></div>
+
+  <div class="envelope-sticky">
+    <div class="envelope-scene">
+      <div class="envelope" id="envelope">
+        <div class="envelope-back"></div>
+
+        <div class="invitation-card" id="invitation-card">
+          <p class="card-eyebrow">{config.invitation.headline}</p>
+          <h1 class="card-names">
+            {config.couple.partner1}
+            <span class="ampersand">&</span>
+            {config.couple.partner2}
+          </h1>
+          <p class="card-subhead">{config.invitation.subheadline}</p>
+          <div class="card-divider"></div>
+          <p class="card-date">{formattedDate}</p>
+          <p class="card-venue">{config.venue.name}</p>
+          <p class="card-location">{config.venue.location}</p>
+        </div>
+
+        <div class="envelope-front"></div>
+        <div class="envelope-flap" id="envelope-flap">
+          <div class="wax-seal" id="wax-seal">
+            <span>A</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="scroll-hint" id="scroll-hint">Scroll to open</p>
+  </div>
+</section>
+
+<style>
+  .envelope-section {
+    position: relative;
+    min-height: 300vh;
+    background:
+      radial-gradient(ellipse at 20% 20%, color-mix(in srgb, var(--color-primary) 12%, transparent), transparent 50%),
+      radial-gradient(ellipse at 80% 80%, color-mix(in srgb, var(--color-accent) 10%, transparent), transparent 50%),
+      linear-gradient(180deg, var(--color-background) 0%, var(--color-secondary) 100%);
+  }
+
+  .envelope-section::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url('/azalea-pattern.svg');
+    background-size: 400px 400px;
+    color: var(--color-primary);
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .scroll-spacer {
+    height: 300vh;
+  }
+
+  .envelope-sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    padding: 1.5rem;
+  }
+
+  .envelope-scene {
+    perspective: 1200px;
+    width: min(90vw, 420px);
+  }
+
+  .envelope {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1.5;
+    transform-style: preserve-3d;
+  }
+
+  .envelope-back {
+    position: absolute;
+    inset: 0;
+    background: var(--color-envelope);
+    border-radius: 4px;
+    box-shadow: 0 20px 60px color-mix(in srgb, var(--color-accent) 20%, transparent);
+  }
+
+  .envelope-front {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, var(--color-envelope) 0%, color-mix(in srgb, var(--color-envelope) 85%, var(--color-envelope-flap)) 100%);
+    border-radius: 4px;
+    clip-path: polygon(0 55%, 50% 85%, 100% 55%, 100% 100%, 0 100%);
+    z-index: 3;
+  }
+
+  .envelope-flap {
+    position: absolute;
+    inset: 0;
+    background: var(--color-envelope-flap);
+    border-radius: 4px 4px 0 0;
+    clip-path: polygon(0 0, 50% 55%, 100% 0);
+    transform-origin: top center;
+    transform: rotateX(0deg);
+    z-index: 4;
+    backface-visibility: hidden;
+  }
+
+  .wax-seal {
+    position: absolute;
+    top: 38%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, color-mix(in srgb, var(--color-gold) 80%, white), var(--color-gold));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--color-gold) 40%, transparent);
+    z-index: 5;
+    transition: opacity 0.3s ease;
+  }
+
+  .wax-seal span {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .invitation-card {
+    position: absolute;
+    top: 8%;
+    left: 50%;
+    transform: translateX(-50%) translateY(40px) scale(0.85);
+    width: 88%;
+    padding: 2rem 1.5rem;
+    background: white;
+    border: 1px solid color-mix(in srgb, var(--color-gold) 30%, transparent);
+    border-radius: 2px;
+    box-shadow: 0 4px 24px color-mix(in srgb, var(--color-accent) 15%, transparent);
+    text-align: center;
+    opacity: 0;
+    z-index: 2;
+  }
+
+  .card-eyebrow {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: 0.75rem;
+  }
+
+  .card-names {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 8vw, 3.5rem);
+    color: var(--color-primary);
+    line-height: 1.1;
+  }
+
+  .ampersand {
+    display: block;
+    font-size: 0.6em;
+    color: var(--color-gold);
+    margin: 0.15em 0;
+  }
+
+  .card-subhead {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-style: italic;
+    color: color-mix(in srgb, var(--color-text) 80%, transparent);
+    margin: 1rem 0;
+    line-height: 1.5;
+  }
+
+  .card-divider {
+    width: 60px;
+    height: 1px;
+    background: var(--color-gold);
+    margin: 1.25rem auto;
+  }
+
+  .card-date {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    font-weight: 500;
+    color: var(--color-text);
+    margin-bottom: 0.5rem;
+  }
+
+  .card-venue {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    color: var(--color-accent);
+    margin-bottom: 0.25rem;
+  }
+
+  .card-location {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  }
+
+  .scroll-hint {
+    margin-top: 2rem;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-accent) 70%, transparent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .envelope-flap {
+      transform: rotateX(180deg) !important;
+    }
+
+    .invitation-card {
+      opacity: 1 !important;
+      transform: translateX(-50%) translateY(0) scale(1) !important;
+    }
+
+    .wax-seal,
+    .scroll-hint {
+      opacity: 0 !important;
+    }
+
+    .scroll-spacer {
+      height: 100vh;
+    }
+
+    .envelope-section {
+      min-height: 100vh;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .invitation-card {
+      padding: 1.5rem 1rem;
+    }
+
+    .card-subhead {
+      font-size: 0.85rem;
+    }
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initEnvelopeScroll() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
+    const section = document.querySelector('.envelope-section');
+    const flap = document.getElementById('envelope-flap');
+    const card = document.getElementById('invitation-card');
+    const seal = document.getElementById('wax-seal');
+    const hint = document.getElementById('scroll-hint');
+
+    if (!section || !flap || !card || !seal) return;
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 0.8,
+      },
+    });
+
+    tl.to(flap, { rotateX: 180, ease: 'power2.inOut', duration: 1 }, 0)
+      .to(seal, { opacity: 0, scale: 0.5, duration: 0.3 }, 0.2)
+      .to(card, { opacity: 1, y: -20, scale: 1, ease: 'power2.out', duration: 1 }, 0.3);
+
+    if (hint) {
+      gsap.to(hint, {
+        opacity: 0,
+        scrollTrigger: {
+          trigger: section,
+          start: 'top top',
+          end: '20% bottom',
+          scrub: true,
+        },
+      });
+    }
+  }
+
+  initEnvelopeScroll();
+  document.addEventListener('astro:page-load', initEnvelopeScroll);
+</script>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <defs>
+    <pattern id="azalea" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse">
+      <circle cx="100" cy="100" r="80" fill="none" stroke="currentColor" stroke-width="0.5" opacity="0.15"/>
+      <ellipse cx="85" cy="90" rx="12" ry="18" fill="currentColor" opacity="0.12" transform="rotate(-20 85 90)"/>
+      <ellipse cx="115" cy="88" rx="12" ry="18" fill="currentColor" opacity="0.12" transform="rotate(20 115 88)"/>
+      <ellipse cx="100" cy="75" rx="12" ry="18" fill="currentColor" opacity="0.12"/>
+      <ellipse cx="92" cy="108" rx="12" ry="18" fill="currentColor" opacity="0.1" transform="rotate(-45 92 108)"/>
+      <ellipse cx="108" cy="108" rx="12" ry="18" fill="currentColor" opacity="0.1" transform="rotate(45 108 108)"/>
+      <circle cx="100" cy="95" r="4" fill="currentColor" opacity="0.08"/>
+      <path d="M40 160 Q60 140 80 160" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.08"/>
+      <path d="M120 160 Q140 140 160 160" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.08"/>
+    </pattern>
+  </defs>
+  <rect width="400" height="400" fill="url(#azalea)"/>
+</svg>

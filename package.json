@@ -1,0 +1,36 @@
+{
+  "name": "evite",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "wrangler dev",
+    "astro": "astro",
+    "generate-types": "wrangler types",
+    "db:migrate": "wrangler d1 execute evite-db --local --file=migrations/0001_init.sql",
+    "db:migrate:remote": "wrangler d1 execute evite-db --remote --file=migrations/0001_init.sql",
+    "db:seed": "tsx scripts/seed-guests.ts",
+    "db:seed:remote": "tsx scripts/seed-guests.ts data/guests.example.csv --remote",
+    "export:rsvp": "wrangler d1 execute evite-db --local --command \"SELECT g.full_name, g.invite_code, g.email, g.attending, g.guest_count, g.dietary_notes, g.message, g.rsvp_at, a.line1, a.line2, a.city, a.state, a.postal_code, a.country FROM guests g LEFT JOIN mailing_addresses a ON a.guest_id = g.id ORDER BY g.full_name;\""
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^14.0.1",
+    "@astrojs/react": "^6.0.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "astro": "^7.0.3",
+    "gsap": "^3.15.0",
+    "jose": "^6.2.3",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "wrangler": "^4.105.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260629.1",
+    "tsx": "^4.22.4"
+  }
+}

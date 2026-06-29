@@ -1,0 +1,37 @@
+---
+import '../styles/global.css';
+import { getWeddingConfig } from '../lib/config';
+
+const config = getWeddingConfig();
+const { theme } = config;
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = 'Wedding Invitation', description = 'You are cordially invited to celebrate with us.' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,400&family=Cormorant+Garamond:wght@400;500;600&family=Great+Vibes&display=swap"
+      rel="stylesheet"
+    />
+    <title>{title}</title>
+  </head>
+  <body
+    style={`--color-primary: ${theme.primary}; --color-secondary: ${theme.secondary}; --color-accent: ${theme.accent}; --color-background: ${theme.background}; --color-text: ${theme.text}; --color-envelope: ${theme.envelope}; --color-envelope-flap: ${theme.envelopeFlap}; --color-gold: ${theme.gold}; --font-display: 'Great Vibes', 'Cormorant Garamond', Georgia, serif; --font-heading: 'Cormorant Garamond', Georgia, serif; --font-body: 'Cormorant', Georgia, serif;`}
+  >
+    <slot />
+  </body>
+</html>

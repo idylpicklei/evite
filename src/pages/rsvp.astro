@@ -1,0 +1,166 @@
+---
+export const prerender = false;
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LoginForm from '../components/LoginForm';
+import RsvpForm from '../components/RsvpForm';
+import AddressForm from '../components/AddressForm';
+import { getWeddingConfig } from '../lib/config';
+import { getSessionFromCookies, SESSION_COOKIE } from '../lib/auth';
+import { findGuestById, getMailingAddress } from '../lib/db';
+
+const config = getWeddingConfig();
+const title = `RSVP — ${config.couple.partner1} & ${config.couple.partner2}`;
+
+const initialCode = Astro.url.searchParams.get('code') ?? '';
+
+const secret = Astro.locals.runtime?.env?.SESSION_SECRET;
+const db = Astro.locals.runtime?.env?.DB;
+
+let session = null;
+let guest = null;
+let address = null;
+
+if (secret && db) {
+  session = await getSessionFromCookies(Astro.cookies.get(SESSION_COOKIE)?.value, secret);
+  if (session) {
+    guest = await findGuestById(db, session.guestId);
+    if (guest) {
+      address = await getMailingAddress(db, guest.id);
+    }
+  }
+}
+
+const isAuthenticated = Boolean(session && guest);
+---
+
+<BaseLayout title={title} description="RSVP for our wedding celebration.">
+  <main class="rsvp-page">
+    <div class="rsvp-header">
+      <a href="/" class="back-link">&larr; Back to invitation</a>
+      <h1 class="rsvp-title">{config.couple.partner1} & {config.couple.partner2}</h1>
+      <p class="rsvp-subtitle">We would be honored by your response</p>
+    </div>
+
+    <div class="rsvp-content">
+      {
+        isAuthenticated && guest ? (
+          <>
+            <RsvpForm
+              client:load
+              fullName={guest.full_name}
+              initialData={{
+                attending: guest.attending,
+                guest_count: guest.guest_count,
+                dietary_notes: guest.dietary_notes,
+                message: guest.message,
+                email: guest.email,
+              }}
+            />
+            <AddressForm
+              client:load
+              initialData={
+                address
+                  ? {
+                      line1: address.line1,
+                      line2: address.line2,
+                      city: address.city,
+                      state: address.state,
+                      postal_code: address.postal_code,
+                      country: address.country,
+                    }
+                  : null
+              }
+            />
+          </>
+        ) : (
+          <LoginForm client:load initialCode={initialCode} />
+        )
+      }
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .rsvp-page {
+    min-height: 100vh;
+    padding: 2rem 1.5rem 4rem;
+    background:
+      radial-gradient(ellipse at 10% 10%, color-mix(in srgb, var(--color-primary) 10%, transparent), transparent 45%),
+      radial-gradient(ellipse at 90% 90%, color-mix(in srgb, var(--color-accent) 8%, transparent), transparent 45%),
+      var(--color-background);
+    background-image: url('/azalea-pattern.svg'), radial-gradient(ellipse at 10% 10%, color-mix(in srgb, var(--color-primary) 10%, transparent), transparent 45%), radial-gradient(ellipse at 90% 90%, color-mix(in srgb, var(--color-accent) 8%, transparent), transparent 45%);
+    background-size: 400px 400px, auto, auto;
+    color: var(--color-primary);
+  }
+
+  .rsvp-header {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 2.5rem;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--color-accent);
+  }
+
+  .back-link:hover {
+    color: var(--color-primary);
+  }
+
+  .rsvp-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 8vw, 3.5rem);
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .rsvp-subtitle {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    font-style: italic;
+    color: color-mix(in srgb, var(--color-text) 75%, transparent);
+  }
+
+  .rsvp-content {
+    max-width: 520px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+</style>
+
+<style is:global>
+  .form-title {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    color: var(--color-primary);
+    margin-bottom: 0.25rem;
+    text-align: center;
+  }
+
+  .form-subtitle {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: color-mix(in srgb, var(--color-text) 75%, transparent);
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
