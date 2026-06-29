@@ -13,13 +13,13 @@
     "subheadline": "request the pleasure of your company at their wedding celebration"
   },
   "theme": {
-    "primary": "#B54160",
-    "secondary": "#F5E6EC",
-    "accent": "#5F253F",
-    "background": "#FAFAFA",
-    "text": "#261A1D",
-    "envelope": "#F4EBE6",
-    "envelopeFlap": "#E6DAD3",
-    "gold": "#C5A059"
+    "primary": "#4A6B5D",
+    "secondary": "#E8F0EC",
+    "accent": "#B36B7E",
+    "background": "#FCFBF9",
+    "text": "#2C3531",
+    "envelope": "#F5EFE9",
+    "envelopeFlap": "#EAE0D5",
+    "gold": "#D4AF37"
   }
 }

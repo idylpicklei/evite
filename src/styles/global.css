@@ -17,6 +17,25 @@ body {
   color: var(--color-text);
   background-color: var(--color-background);
   -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url('/background.png') center center / cover no-repeat;
+  background-color: var(--color-background);
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: rgba(255, 252, 253, 0.08);
+  pointer-events: none;
 }
 
 h1,
